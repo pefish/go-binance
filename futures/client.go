@@ -619,3 +619,7 @@ func (c *Client) NewLongShortRatioService() *LongShortRatioService {
 func (c *Client) NewBigAccountCountLongshortRatioService() *BigAccountCountLongshortRatioService {
 	return &BigAccountCountLongshortRatioService{c: c}
 }
+
+func (c *Client) NewBigAccountHoldVolLongshortRatioService() *BigAccountHoldVolLongshortRatioService {
+	return &BigAccountHoldVolLongshortRatioService{c: c}
+}
