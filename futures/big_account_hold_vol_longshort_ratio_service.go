@@ -49,7 +49,7 @@ func (s *BigAccountHoldVolLongshortRatioService) EndTime(endTime int64) *BigAcco
 func (s *BigAccountHoldVolLongshortRatioService) Do(ctx context.Context, opts ...RequestOption) (res []*BigAccountHoldVolLongshortRatio, err error) {
 	r := &request{
 		method:   http.MethodGet,
-		endpoint: "/futures/data/topLongShortAccountRatio",
+		endpoint: "/futures/data/topLongShortPositionRatio",
 	}
 
 	r.setParam("symbol", s.symbol)
