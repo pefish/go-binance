@@ -2,31 +2,46 @@ package util
 
 import (
 	"context"
+	"fmt"
 	"github.com/pefish/go-binance/futures"
-	"time"
+	go_logger "github.com/pefish/go-logger"
+	"strings"
 )
 
 func WsLoopWrapper(
 	ctx context.Context,
-	do func() (doneC, stopC chan struct{}, err error),
-	loopInterval time.Duration,
-	errHandler futures.ErrHandler,
-) {
+	logger go_logger.InterfaceLogger,
+	url string,
+	handler func(msg []byte),
+) error {
+	wsServeChan := make(chan bool, 1)
+	wsServeChan <- true
+	var doneC chan struct{}
+	var stopC chan struct{}
+	var err error
 	for {
-		doneC, stopC, err := do()
-		if err != nil {
-			errHandler(err)
-			time.Sleep(loopInterval)
-			continue
-		}
-
 		select {
+		case <-wsServeChan:
+			doneC, stopC, err = futures.WsServe(
+				futures.NewWsConfig(fmt.Sprintf("%s/%s", futures.GetWsEndpoint(), url)),
+				handler,
+				func(err error) {
+					if strings.Contains(err.Error(), "connection timed out") {
+						logger.InfoF("Connection timed out, reconnect.")
+						wsServeChan <- true
+					}
+				},
+			)
+			if err != nil {
+				return err
+			}
 		case <-doneC:
-			time.Sleep(loopInterval)
+			logger.InfoF("Connection done, reconnect.")
+			wsServeChan <- true
 			continue
 		case <-ctx.Done():
 			stopC <- struct{}{}
-			return
+			return nil
 		}
 	}
 }

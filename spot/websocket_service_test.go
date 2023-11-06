@@ -18,16 +18,16 @@ func TestWebsocketService(t *testing.T) {
 }
 
 func (s *websocketServiceTestSuite) SetupTest() {
-	s.origWsServe = wsServe
+	s.origWsServe = WsServe
 }
 
 func (s *websocketServiceTestSuite) TearDownTest() {
-	wsServe = s.origWsServe
+	WsServe = s.origWsServe
 	s.serveCount = 0
 }
 
 func (s *websocketServiceTestSuite) mockWsServe(data []byte, err error) {
-	wsServe = func(cfg *WsConfig, handler WsHandler, errHandler ErrHandler) (doneC, stopC chan struct{}, innerErr error) {
+	WsServe = func(cfg *WsConfig, handler WsHandler, errHandler ErrHandler) (doneC, stopC chan struct{}, innerErr error) {
 		s.serveCount++
 		doneC = make(chan struct{})
 		stopC = make(chan struct{})

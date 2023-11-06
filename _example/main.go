@@ -2,34 +2,36 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"github.com/pefish/go-binance/futures"
 	"github.com/pefish/go-binance/util"
-	"time"
+	go_logger "github.com/pefish/go-logger"
+	"log"
+	"strings"
 )
 
 func main() {
+	err := do()
+	if err != nil {
+		log.Fatal(err)
+	}
+}
 
-	util.WsLoopWrapper(
+func do() error {
+	return util.WsLoopWrapper(
 		context.Background(),
-		func() (doneC, stopC chan struct{}, err error) {
-			return futures.WsKlineServe("BTCUSDT", "1m", func(event *futures.WsKlineEvent) {
-				fmt.Println(event.Time, event.Kline.Close)
-				return
-			}, func(err error) {
-				if err != nil {
-					fmt.Println(err)
-				}
-			})
-		},
-		5*time.Second,
-		func(err error) {
+		go_logger.Logger,
+		fmt.Sprintf("%s@kline_%s", strings.ToLower("BTCUSDT"), "1m"),
+		func(message []byte) {
+			event := new(futures.WsKlineEvent)
+			err := json.Unmarshal(message, event)
 			if err != nil {
 				fmt.Println(err)
+				return
 			}
+			fmt.Println(event.Time, event.Kline.Close)
+			return
 		},
 	)
-
-	select {}
-
 }
