@@ -14,6 +14,7 @@ type GetIncomeHistoryService struct {
 	startTime  *int64
 	endTime    *int64
 	limit      *int64
+	timestamp  *int64
 }
 
 // Symbol set symbol
@@ -31,6 +32,11 @@ func (s *GetIncomeHistoryService) IncomeType(incomeType string) *GetIncomeHistor
 // StartTime set startTime
 func (s *GetIncomeHistoryService) StartTime(startTime int64) *GetIncomeHistoryService {
 	s.startTime = &startTime
+	return s
+}
+
+func (s *GetIncomeHistoryService) Timestamp(timestamp int64) *GetIncomeHistoryService {
+	s.timestamp = &timestamp
 	return s
 }
 
@@ -65,6 +71,9 @@ func (s *GetIncomeHistoryService) Do(ctx context.Context, opts ...RequestOption)
 	}
 	if s.limit != nil {
 		r.setParam("limit", *s.limit)
+	}
+	if s.timestamp != nil {
+		r.setParam("timestamp", *s.timestamp)
 	}
 
 	data, _, err := s.c.callAPI(ctx, r, opts...)
