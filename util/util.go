@@ -23,13 +23,13 @@ func WsLoopWrapper(
 	for {
 		select {
 		case <-wsServeChan:
-			logger.InfoF("Connecting %s...", url)
+			logger.InfoF("Connecting <%s>...", url)
 			doneC, stopC, err = futures.WsServe(
 				futures.NewWsConfig(fmt.Sprintf("%s/%s", futures.GetWsEndpoint(), url)),
 				handler,
 				func(err error) {
 					if strings.Contains(err.Error(), "connection timed out") {
-						logger.InfoF("Connection timed out, reconnect.")
+						logger.InfoF("Connection <%s> timed out, reconnect.", url)
 						wsServeChan <- true
 					}
 				},
