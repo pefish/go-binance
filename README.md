@@ -354,4 +354,3 @@ import (
 delivery.UseTestnet = true
 BinanceClient = delivery.NewClient(ApiKey, SecretKey)
 ```
-
