@@ -3,9 +3,10 @@ package util
 import (
 	"context"
 	"fmt"
+	"strings"
+
 	"github.com/pefish/go-binance/futures"
 	go_logger "github.com/pefish/go-logger"
-	"strings"
 )
 
 func WsLoopWrapper(
@@ -22,6 +23,7 @@ func WsLoopWrapper(
 	for {
 		select {
 		case <-wsServeChan:
+			logger.InfoF("Connecting %s...", url)
 			doneC, stopC, err = futures.WsServe(
 				futures.NewWsConfig(fmt.Sprintf("%s/%s", futures.GetWsEndpoint(), url)),
 				handler,
@@ -35,8 +37,9 @@ func WsLoopWrapper(
 			if err != nil {
 				return err
 			}
+			logger.InfoF("Connect done.")
 		case <-doneC:
-			logger.InfoF("Connection done, reconnect.")
+			logger.InfoF("Connection closed, to reconnect...")
 			wsServeChan <- true
 			continue
 		case <-ctx.Done():
