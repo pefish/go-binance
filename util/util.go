@@ -37,9 +37,9 @@ func WsLoopWrapper(
 			if err != nil {
 				return err
 			}
-			logger.InfoF("Connect done.")
+			logger.InfoF("Connect <%s> done.", url)
 		case <-doneC:
-			logger.InfoF("Connection closed, to reconnect...")
+			logger.InfoF("Connection <%s> closed, to reconnect...", url)
 			wsServeChan <- true
 			continue
 		case <-ctx.Done():
