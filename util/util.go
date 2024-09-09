@@ -6,12 +6,12 @@ import (
 	"strings"
 
 	"github.com/pefish/go-binance/futures"
-	go_logger "github.com/pefish/go-logger"
+	i_logger "github.com/pefish/go-interface/i-logger"
 )
 
 func WsLoopWrapper(
 	ctx context.Context,
-	logger go_logger.InterfaceLogger,
+	logger i_logger.ILogger,
 	url string,
 	handler func(msg []byte),
 ) error {
