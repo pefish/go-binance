@@ -41,6 +41,7 @@ func WsLoopWrapper(
 		case <-doneC:
 			logger.InfoF("Connection <%s> closed, to reconnect...", url)
 			wsServeChan <- true
+			doneC = nil // 阻止这个分支被多次执行
 			continue
 		case <-ctx.Done():
 			stopC <- struct{}{}
