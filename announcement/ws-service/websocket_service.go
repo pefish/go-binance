@@ -213,7 +213,7 @@ func WsServe(logger i_logger.ILogger, cfg *WsConfig, handler WsHandler, errHandl
 			_, message, err := c.ReadMessage()
 			if err != nil {
 				if !silent {
-					errHandler(err)
+					errHandler(errors.Wrap(err, "failed to read websocket message"))
 				}
 				return
 			}
@@ -241,10 +241,9 @@ func WsServe(logger i_logger.ILogger, cfg *WsConfig, handler WsHandler, errHandl
 func keepAlive(logger i_logger.ILogger, c *websocket.Conn, timeout time.Duration) {
 	ticker := time.NewTicker(timeout)
 
-	lastResponse := time.Now()
 	c.SetPongHandler(func(msg string) error {
-		lastResponse = time.Now()
 		logger.Debug("pong received.")
+		c.SetReadDeadline(time.Now().Add(timeout * 2))
 		return nil
 	})
 
@@ -254,14 +253,11 @@ func keepAlive(logger i_logger.ILogger, c *websocket.Conn, timeout time.Duration
 			deadline := time.Now().Add(10 * time.Second)
 			err := c.WriteControl(websocket.PingMessage, []byte{}, deadline)
 			if err != nil {
+				logger.ErrorF("send ping error. err: %s", err.Error())
 				return
 			}
 			logger.Debug("ping sended.")
 			<-ticker.C
-			if time.Since(lastResponse) > timeout {
-				c.Close()
-				return
-			}
 		}
 	}()
 }
