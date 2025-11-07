@@ -5,10 +5,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
-	"strings"
 
 	"github.com/pefish/go-binance/futures"
 	"github.com/pefish/go-binance/util"
+	t_logger "github.com/pefish/go-interface/t-logger"
 	go_logger "github.com/pefish/go-logger"
 )
 
@@ -20,10 +20,11 @@ func main() {
 }
 
 func do() error {
-	return util.WsLoopWrapper(
+	futureUtil := util.NewFutureUtil(go_logger.NewLogger(t_logger.Level_DEBUG))
+	return futureUtil.WsLoopSingleStream(
 		context.Background(),
-		go_logger.Logger,
-		fmt.Sprintf("%s@kline_%s", strings.ToLower("BTCUSDT"), "5m"),
+		"BTCUSDT",
+		"kline_5m",
 		func(message []byte) {
 			event := new(futures.WsKlineEvent)
 			err := json.Unmarshal(message, event)

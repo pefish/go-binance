@@ -33,8 +33,8 @@ func GetWsEndpoint() string {
 	return baseWsMainUrl
 }
 
-// getCombinedEndpoint return the base endpoint of the combined stream according the UseTestnet flag
-func getCombinedEndpoint() string {
+// GetCombinedEndpoint return the base endpoint of the combined stream according the UseTestnet flag
+func GetCombinedEndpoint() string {
 	if UseTestnet {
 		return baseCombinedTestnetURL
 	}
@@ -76,7 +76,7 @@ func WsAggTradeServe(symbol string, handler WsAggTradeHandler, errHandler ErrHan
 
 // WsCombinedAggTradeServe is similar to WsAggTradeServe, but it handles multiple symbols
 func WsCombinedAggTradeServe(symbols []string, handler WsAggTradeHandler, errHandler ErrHandler) (doneC, stopC chan struct{}, err error) {
-	endpoint := getCombinedEndpoint()
+	endpoint := GetCombinedEndpoint()
 	for _, s := range symbols {
 		endpoint += fmt.Sprintf("%s@aggTrade", strings.ToLower(s)) + "/"
 	}
@@ -186,7 +186,7 @@ func wsCombinedMarkPriceServe(endpoint string, handler WsMarkPriceHandler, errHa
 
 // WsCombinedMarkPriceServe is similar to WsMarkPriceServe, but it handles multiple symbols
 func WsCombinedMarkPriceServe(symbols []string, handler WsMarkPriceHandler, errHandler ErrHandler) (doneC, stopC chan struct{}, err error) {
-	endpoint := getCombinedEndpoint()
+	endpoint := GetCombinedEndpoint()
 	for _, s := range symbols {
 		endpoint += fmt.Sprintf("%s@markPrice", strings.ToLower(s)) + "/"
 	}
@@ -197,7 +197,7 @@ func WsCombinedMarkPriceServe(symbols []string, handler WsMarkPriceHandler, errH
 
 // WsCombinedMarkPriceServeWithRate is similar to WsMarkPriceServeWithRate, but it for multiple symbols
 func WsCombinedMarkPriceServeWithRate(symbolLevels map[string]time.Duration, handler WsMarkPriceHandler, errHandler ErrHandler) (doneC, stopC chan struct{}, err error) {
-	endpoint := getCombinedEndpoint()
+	endpoint := GetCombinedEndpoint()
 	for symbol, rate := range symbolLevels {
 		var rateStr string
 		switch rate {
@@ -307,7 +307,7 @@ func WsKlineServe(symbol string, interval string, handler WsKlineHandler, errHan
 
 // WsCombinedKlineServe is similar to WsKlineServe, but it handles multiple symbols with it interval
 func WsCombinedKlineServe(symbolIntervalPair map[string]string, handler WsKlineHandler, errHandler ErrHandler) (doneC, stopC chan struct{}, err error) {
-	endpoint := getCombinedEndpoint()
+	endpoint := GetCombinedEndpoint()
 	for symbol, interval := range symbolIntervalPair {
 		endpoint += fmt.Sprintf("%s@kline_%s", strings.ToLower(symbol), interval) + "/"
 	}
@@ -399,7 +399,7 @@ func WsContinuousKlineServe(subscribeArgs *WsContinuousKlineSubcribeArgs, handle
 // WsCombinedContinuousKlineServe is similar to WsContinuousKlineServe, but it handles multiple pairs of different contractType with its interval
 func WsCombinedContinuousKlineServe(subscribeArgsList []*WsContinuousKlineSubcribeArgs,
 	handler WsContinuousKlineHandler, errHandler ErrHandler) (doneC, stopC chan struct{}, err error) {
-	endpoint := getCombinedEndpoint()
+	endpoint := GetCombinedEndpoint()
 	for _, val := range subscribeArgsList {
 		endpoint += fmt.Sprintf("%s_%s@continuousKline_%s", strings.ToLower(val.Pair),
 			strings.ToLower(val.ContractType), val.Interval) + "/"
@@ -692,7 +692,7 @@ func WsDiffDepthServe(symbol string, handler WsDepthHandler, errHandler ErrHandl
 
 // WsCombinedDepthServe is similar to WsPartialDepthServe, but it for multiple symbols
 func WsCombinedDepthServe(symbolLevels map[string]string, handler WsDepthHandler, errHandler ErrHandler) (doneC, stopC chan struct{}, err error) {
-	endpoint := getCombinedEndpoint()
+	endpoint := GetCombinedEndpoint()
 	for s, l := range symbolLevels {
 		endpoint += fmt.Sprintf("%s@depth%s", strings.ToLower(s), l) + "/"
 	}
@@ -738,7 +738,7 @@ func WsCombinedDepthServe(symbolLevels map[string]string, handler WsDepthHandler
 
 // WsCombinedDiffDepthServe is similar to WsDiffDepthServe, but it for multiple symbols
 func WsCombinedDiffDepthServe(symbols []string, handler WsDepthHandler, errHandler ErrHandler) (doneC, stopC chan struct{}, err error) {
-	endpoint := getCombinedEndpoint()
+	endpoint := GetCombinedEndpoint()
 	for _, s := range symbols {
 		endpoint += fmt.Sprintf("%s@depth", strings.ToLower(s)) + "/"
 	}

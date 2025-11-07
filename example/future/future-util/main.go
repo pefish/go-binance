@@ -2,8 +2,11 @@ package main
 
 import (
 	"fmt"
-	"github.com/pefish/go-binance/util"
 	"log"
+
+	"github.com/pefish/go-binance/util"
+	t_logger "github.com/pefish/go-interface/t-logger"
+	go_logger "github.com/pefish/go-logger"
 )
 
 func main() {
@@ -14,7 +17,7 @@ func main() {
 }
 
 func do() error {
-	futureUtil := util.NewFutureUtil()
+	futureUtil := util.NewFutureUtil(go_logger.NewLogger(t_logger.Level_DEBUG))
 	symbolInfo, err := futureUtil.SymbolInfo("ONGUSDT")
 	if err != nil {
 		return err
