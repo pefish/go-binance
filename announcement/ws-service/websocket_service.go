@@ -183,7 +183,7 @@ func WsServe(logger i_logger.ILogger, cfg *WsConfig, handler WsHandler, errHandl
 	requestHeader.Add("X-MBX-APIKEY", cfg.ApiKey)
 	c, _, err := Dialer.Dial(cfg.Endpoint, requestHeader)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, errors.Wrap(err, "failed to dial websocket")
 	}
 	c.SetReadLimit(655350)
 	doneC = make(chan struct{})
@@ -193,7 +193,7 @@ func WsServe(logger i_logger.ILogger, cfg *WsConfig, handler WsHandler, errHandl
 		// websocket.Conn.ReadMessage or when the stopC channel is
 		// closed by the client.
 		defer close(doneC)
-		keepAlive(c, WebsocketTimeout)
+		keepAlive(logger, c, WebsocketTimeout)
 		// Wait for the stopC channel to be closed.  We do that in a
 		// separate goroutine because ReadMessage is a blocking
 		// operation.
@@ -201,10 +201,13 @@ func WsServe(logger i_logger.ILogger, cfg *WsConfig, handler WsHandler, errHandl
 		go func() {
 			select {
 			case <-stopC:
+				logger.Debug("stopC received.")
 				silent = true
 			case <-doneC:
+				logger.Debug("doneC received.")
 			}
 			c.Close()
+			logger.Debug("connection closed.")
 		}()
 		for {
 			_, message, err := c.ReadMessage()
@@ -235,12 +238,13 @@ func WsServe(logger i_logger.ILogger, cfg *WsConfig, handler WsHandler, errHandl
 	return
 }
 
-func keepAlive(c *websocket.Conn, timeout time.Duration) {
+func keepAlive(logger i_logger.ILogger, c *websocket.Conn, timeout time.Duration) {
 	ticker := time.NewTicker(timeout)
 
 	lastResponse := time.Now()
 	c.SetPongHandler(func(msg string) error {
 		lastResponse = time.Now()
+		logger.Debug("pong received.")
 		return nil
 	})
 
@@ -252,6 +256,7 @@ func keepAlive(c *websocket.Conn, timeout time.Duration) {
 			if err != nil {
 				return
 			}
+			logger.Debug("ping sended.")
 			<-ticker.C
 			if time.Since(lastResponse) > timeout {
 				c.Close()
