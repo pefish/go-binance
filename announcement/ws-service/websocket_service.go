@@ -43,8 +43,6 @@ func HmacSHA256(message, secret string) string {
 var (
 	// WebsocketTimeout is an interval for sending ping/pong messages if WebsocketKeepalive is enabled
 	WebsocketTimeout = time.Second * 60
-	// WebsocketKeepalive enables sending ping/pong messages to check the connection stability
-	WebsocketKeepalive = false
 )
 
 type WSService struct {
@@ -145,7 +143,8 @@ func WsServeLoop(
 				cfg,
 				handler,
 				func(err error) {
-					if strings.Contains(err.Error(), "connection timed out") {
+					if strings.Contains(err.Error(), "connection timed out") ||
+						strings.Contains(err.Error(), "close 1006 (abnormal closure)") {
 						logger.InfoF("Connection <%s> timed out, reconnect.", url)
 						wsServeChan <- true
 					} else {
@@ -194,9 +193,7 @@ func WsServe(logger i_logger.ILogger, cfg *WsConfig, handler WsHandler, errHandl
 		// websocket.Conn.ReadMessage or when the stopC channel is
 		// closed by the client.
 		defer close(doneC)
-		if WebsocketKeepalive {
-			keepAlive(c, WebsocketTimeout)
-		}
+		keepAlive(c, WebsocketTimeout)
 		// Wait for the stopC channel to be closed.  We do that in a
 		// separate goroutine because ReadMessage is a blocking
 		// operation.
