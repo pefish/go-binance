@@ -83,7 +83,7 @@ func (t *WSService) WatchAnnouncement(
 	paramsExceptSign := fmt.Sprintf(
 		"random=%s&topic=%s&recvWindow=%s&timestamp=%d",
 		RandString(32),
-		"com_announcement_zh",
+		"com_announcement_en",
 		"30000",
 		time.Now().UnixMilli(),
 	)
