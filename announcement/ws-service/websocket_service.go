@@ -144,8 +144,9 @@ func WsServeLoop(
 				handler,
 				func(err error) {
 					if strings.Contains(err.Error(), "connection timed out") ||
-						strings.Contains(err.Error(), "close 1006 (abnormal closure)") {
-						logger.InfoF("Connection <%s> timed out, reconnect.", url)
+						strings.Contains(err.Error(), "close 1006 (abnormal closure)") ||
+						strings.Contains(err.Error(), "connection reset by peer") {
+						logger.InfoF("Connection <%s> closed, reconnect.", url)
 						wsServeChan <- true
 					} else {
 						// 如果是其他错误，直接中断
