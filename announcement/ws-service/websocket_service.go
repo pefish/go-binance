@@ -80,22 +80,23 @@ func (t *WSService) WatchAnnouncement(
 	ctx context.Context,
 	handler WsAnnouncementHandler,
 ) error {
-	paramsExceptSign := fmt.Sprintf(
-		"random=%s&topic=%s&recvWindow=%s&timestamp=%d",
-		RandString(32),
-		"com_announcement_en",
-		"30000",
-		time.Now().UnixMilli(),
-	)
-	signature := HmacSHA256(paramsExceptSign, t.apiSecret)
-
-	endpoint := fmt.Sprintf("%s?%s&signature=%s", baseWsMainURL, paramsExceptSign, signature)
 	return WsServeLoop(
 		ctx,
 		t.logger,
 		&WsConfig{
-			Endpoint: endpoint,
-			ApiKey:   t.apiKey,
+			EndpointFunc: func() string {
+				paramsExceptSign := fmt.Sprintf(
+					"random=%s&topic=%s&recvWindow=%s&timestamp=%d",
+					RandString(32),
+					"com_announcement_en",
+					"30000",
+					time.Now().UnixMilli(),
+				)
+				signature := HmacSHA256(paramsExceptSign, t.apiSecret)
+
+				return fmt.Sprintf("%s?%s&signature=%s", baseWsMainURL, paramsExceptSign, signature)
+			},
+			ApiKey: t.apiKey,
 		},
 		func(data []byte) {
 			event := new(WsAnnouncementEvent)
@@ -117,8 +118,8 @@ type ErrHandler func(err error)
 
 // WsConfig webservice configuration
 type WsConfig struct {
-	Endpoint string
-	ApiKey   string
+	EndpointFunc func() string
+	ApiKey       string
 }
 
 func WsServeLoop(
@@ -127,7 +128,7 @@ func WsServeLoop(
 	cfg *WsConfig,
 	handler WsHandler,
 ) error {
-	url := cfg.Endpoint
+	url := cfg.EndpointFunc
 	wsServeChan := make(chan bool, 1)
 	wsServeChan <- true
 	var doneC chan struct{}
@@ -182,7 +183,7 @@ func WsServe(logger i_logger.ILogger, cfg *WsConfig, handler WsHandler, errHandl
 
 	requestHeader := http.Header{}
 	requestHeader.Add("X-MBX-APIKEY", cfg.ApiKey)
-	c, _, err := Dialer.Dial(cfg.Endpoint, requestHeader)
+	c, _, err := Dialer.Dial(cfg.EndpointFunc(), requestHeader)
 	if err != nil {
 		return nil, nil, errors.Wrap(err, "failed to dial websocket")
 	}
