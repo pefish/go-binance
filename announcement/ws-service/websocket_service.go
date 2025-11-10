@@ -128,7 +128,7 @@ func WsServeLoop(
 	cfg *WsConfig,
 	handler WsHandler,
 ) error {
-	url := cfg.EndpointFunc
+	url := cfg.EndpointFunc()
 	wsServeChan := make(chan bool, 1)
 	wsServeChan <- true
 	var doneC chan struct{}
