@@ -1,13 +1,12 @@
 package main
 
 import (
-	"context"
 	"log"
 	"os"
 
 	"github.com/davecgh/go-spew/spew"
 	"github.com/joho/godotenv"
-	"github.com/pefish/go-binance/futures"
+	future_util "github.com/pefish/go-binance/util/future"
 )
 
 func main() {
@@ -23,14 +22,10 @@ func main() {
 }
 
 func do() error {
-	binanceFutureClient := futures.NewClient(
-		os.Getenv("BINANCE_API_KEY"),
-		os.Getenv("BINANCE_API_SECRET"),
-	)
-	prices, err := binanceFutureClient.NewListPricesService().Pair("XCN1USDT").Do(context.Background())
+	price, err := future_util.Price("XCNUSDT")
 	if err != nil {
 		return err
 	}
-	spew.Dump(prices)
+	spew.Dump(price)
 	return nil
 }

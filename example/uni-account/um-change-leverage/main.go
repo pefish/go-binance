@@ -1,12 +1,13 @@
 package main
 
 import (
+	"context"
 	"log"
 	"os"
 
 	"github.com/davecgh/go-spew/spew"
 	"github.com/joho/godotenv"
-	future_util "github.com/pefish/go-binance/util/future"
+	uni_account "github.com/pefish/go-binance/uni-account"
 )
 
 func main() {
@@ -22,10 +23,18 @@ func main() {
 }
 
 func do() error {
-	symbolInfo, err := future_util.PairInfo("FLMUSDT")
+	uniAccountClient := uni_account.NewClient(
+		os.Getenv("API_KEY"),
+		os.Getenv("API_SECRET"),
+	)
+
+	symbol := "FLMUSDT"
+
+	r, err := uniAccountClient.NewChangeUMLeverageService().Symbol(symbol).Leverage(5).Do(context.Background())
 	if err != nil {
 		return err
 	}
-	spew.Dump(symbolInfo)
+	spew.Dump(r)
+
 	return nil
 }

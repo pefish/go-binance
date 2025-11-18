@@ -3,6 +3,7 @@ package future_util
 import (
 	"context"
 	"fmt"
+	"strconv"
 	"strings"
 	"time"
 
@@ -25,6 +26,24 @@ func PairInfo(pair string) (*futures.Symbol, error) {
 	}
 
 	return nil, errors.New("Pair not found.")
+}
+
+func Price(pair string) (float64, error) {
+	binanceFutureClient := futures.NewClient("", "")
+	newCtx, _ := context.WithTimeout(context.Background(), 5*time.Second)
+	prices, err := binanceFutureClient.NewListPricesService().Pair(pair).Do(newCtx)
+	if err != nil {
+		return 0, err
+	}
+	if len(prices) != 1 {
+		return 0, errors.Errorf("pairName %s prices length not 1", pair)
+	}
+
+	price, err := strconv.ParseFloat(prices[0].Price, 64)
+	if err != nil {
+		return 0, err
+	}
+	return price, nil
 }
 
 func WsLoopSingleStream(
