@@ -151,7 +151,7 @@ func (s *tickerServiceTestSuite) TestListSinglePrice() {
 		s.assertRequestEqual(e, r)
 	})
 
-	prices, err := s.client.NewListPricesService().Symbol(symbol).Do(newContext())
+	prices, err := s.client.NewListPricesService().Pair(symbol).Do(newContext())
 	r := s.r()
 	r.NoError(err)
 	r.Len(prices, 1)
