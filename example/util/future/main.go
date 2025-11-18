@@ -22,7 +22,7 @@ func main() {
 }
 
 func do() error {
-	symbolInfo, err := future_util.PairInfo("FLMUSDT")
+	symbolInfo, err := future_util.PairInfo("BTCUSDT")
 	if err != nil {
 		return err
 	}

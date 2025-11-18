@@ -12,7 +12,15 @@ import (
 	"github.com/pkg/errors"
 )
 
-func PairInfo(pair string) (*futures.Symbol, error) {
+type PairInfoType struct {
+	futures.Symbol
+	MinQuantity    float64 // 最小下单数量
+	MaxQuantity    float64
+	OrderPrecision int     // 下单数量精度
+	MinUAmount     float64 // 最小下单金额（USDT）
+}
+
+func PairInfo(pair string) (*PairInfoType, error) {
 	binanceFutureClient := futures.NewClient("", "")
 	newCtx, _ := context.WithTimeout(context.Background(), 5*time.Second)
 	exchangeInfo, err := binanceFutureClient.NewExchangeInfoService().Do(newCtx)
@@ -21,7 +29,41 @@ func PairInfo(pair string) (*futures.Symbol, error) {
 	}
 	for _, e := range exchangeInfo.Symbols {
 		if e.Symbol == pair {
-			return &e, nil
+			pairInfo := &PairInfoType{
+				Symbol: e,
+			}
+			for _, map_ := range e.Filters {
+				filterType := futures.SymbolFilterType(map_["filterType"].(string))
+				switch filterType {
+				case futures.SymbolFilterTypeLotSize:
+					minQty, err := strconv.ParseFloat(map_["minQty"].(string), 64)
+					if err != nil {
+						return nil, err
+					}
+					maxQty, err := strconv.ParseFloat(map_["maxQty"].(string), 64)
+					if err != nil {
+						return nil, err
+					}
+					stepSize, err := strconv.ParseFloat(map_["stepSize"].(string), 64)
+					if err != nil {
+						return nil, err
+					}
+					orderPrecision := 0
+					for step := stepSize; step < 1; step *= 10 {
+						orderPrecision++
+					}
+					pairInfo.MinQuantity = minQty
+					pairInfo.MaxQuantity = maxQty
+					pairInfo.OrderPrecision = orderPrecision
+				case futures.SymbolFilterTypeMinNotional:
+					minNotional, err := strconv.ParseFloat(map_["notional"].(string), 64)
+					if err != nil {
+						return nil, err
+					}
+					pairInfo.MinUAmount = minNotional
+				}
+			}
+			return pairInfo, nil
 		}
 	}
 
