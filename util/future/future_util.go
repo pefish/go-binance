@@ -11,7 +11,7 @@ import (
 	"github.com/pkg/errors"
 )
 
-func SymbolInfo(symbol string) (*futures.Symbol, error) {
+func PairInfo(pair string) (*futures.Symbol, error) {
 	binanceFutureClient := futures.NewClient("", "")
 	newCtx, _ := context.WithTimeout(context.Background(), 5*time.Second)
 	exchangeInfo, err := binanceFutureClient.NewExchangeInfoService().Do(newCtx)
@@ -19,12 +19,12 @@ func SymbolInfo(symbol string) (*futures.Symbol, error) {
 		return nil, err
 	}
 	for _, e := range exchangeInfo.Symbols {
-		if e.Symbol == symbol {
+		if e.Symbol == pair {
 			return &e, nil
 		}
 	}
 
-	return nil, errors.New("Symbol not found.")
+	return nil, errors.New("Pair not found.")
 }
 
 func WsLoopSingleStream(

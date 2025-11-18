@@ -22,7 +22,7 @@ func main() {
 }
 
 func do() error {
-	symbolInfo, err := future_util.SymbolInfo("XCNUSDT")
+	symbolInfo, err := future_util.PairInfo("XCNUSDT")
 	if err != nil {
 		return err
 	}
