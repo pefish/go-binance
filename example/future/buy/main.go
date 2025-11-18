@@ -4,11 +4,18 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"os"
 
+	"github.com/joho/godotenv"
 	"github.com/pefish/go-binance/futures"
 )
 
 func main() {
+	envMap, _ := godotenv.Read("./.env")
+	for k, v := range envMap {
+		os.Setenv(k, v)
+	}
+
 	err := do()
 	if err != nil {
 		log.Fatal(err)
@@ -18,18 +25,18 @@ func main() {
 func do() error {
 	//startTime := 1704246284744
 	binanceFutureClient := futures.NewClient(
-		"",
-		"",
+		os.Getenv("API_KEY"),
+		os.Getenv("API_SECRET"),
 	)
 
-	symbol := "BTCUSDT"
+	symbol := "FLMUSDT"
 
 	res, err := binanceFutureClient.
 		NewCreateOrderService().
 		Symbol(symbol).
 		Side(futures.SideTypeBuy).
 		Type(futures.OrderTypeMarket).
-		Quantity("0.01").
+		Quantity("2000").
 		Do(context.Background())
 	if err != nil {
 		return err

@@ -24,10 +24,10 @@ func main() {
 
 func do() error {
 	binanceFutureClient := futures.NewClient(
-		"",
-		"",
+		os.Getenv("BINANCE_API_KEY"),
+		os.Getenv("BINANCE_API_SECRET"),
 	)
-	prices, err := binanceFutureClient.NewListPricesService().Pair("XCNUSDT").Do(context.Background())
+	prices, err := binanceFutureClient.NewListPricesService().Pair("XCN1USDT").Do(context.Background())
 	if err != nil {
 		return err
 	}
