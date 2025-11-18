@@ -7,9 +7,8 @@ import (
 	"log"
 
 	"github.com/pefish/go-binance/futures"
-	"github.com/pefish/go-binance/util"
-	t_logger "github.com/pefish/go-interface/t-logger"
-	go_logger "github.com/pefish/go-logger"
+	future_util "github.com/pefish/go-binance/util/future"
+	i_logger "github.com/pefish/go-interface/i-logger"
 )
 
 func main() {
@@ -20,9 +19,9 @@ func main() {
 }
 
 func do() error {
-	futureUtil := util.NewFutureUtil(go_logger.NewLogger(t_logger.Level_DEBUG))
-	return futureUtil.WsLoopMultiStream(
+	return future_util.WsLoopMultiStream(
 		context.Background(),
+		&i_logger.DefaultLogger,
 		[]string{
 			"BTCUSDT@kline_5m",
 			"ETHUSDT@kline_5m",

@@ -6,9 +6,7 @@ import (
 
 	"github.com/davecgh/go-spew/spew"
 	"github.com/joho/godotenv"
-	"github.com/pefish/go-binance/util"
-	t_logger "github.com/pefish/go-interface/t-logger"
-	go_logger "github.com/pefish/go-logger"
+	future_util "github.com/pefish/go-binance/util/future"
 )
 
 func main() {
@@ -24,8 +22,7 @@ func main() {
 }
 
 func do() error {
-	futureUtil := util.NewFutureUtil(go_logger.NewLogger(t_logger.Level_DEBUG))
-	symbolInfo, err := futureUtil.SymbolInfo("XCNUSDT")
+	symbolInfo, err := future_util.SymbolInfo("XCNUSDT")
 	if err != nil {
 		return err
 	}

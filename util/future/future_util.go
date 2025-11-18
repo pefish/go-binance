@@ -1,4 +1,4 @@
-package util
+package future_util
 
 import (
 	"context"
@@ -11,17 +11,7 @@ import (
 	"github.com/pkg/errors"
 )
 
-type FutureUtil struct {
-	logger i_logger.ILogger
-}
-
-func NewFutureUtil(logger i_logger.ILogger) *FutureUtil {
-	return &FutureUtil{
-		logger: logger,
-	}
-}
-
-func (f *FutureUtil) SymbolInfo(symbol string) (*futures.Symbol, error) {
+func SymbolInfo(symbol string) (*futures.Symbol, error) {
 	binanceFutureClient := futures.NewClient("", "")
 	newCtx, _ := context.WithTimeout(context.Background(), 5*time.Second)
 	exchangeInfo, err := binanceFutureClient.NewExchangeInfoService().Do(newCtx)
@@ -37,8 +27,9 @@ func (f *FutureUtil) SymbolInfo(symbol string) (*futures.Symbol, error) {
 	return nil, errors.New("Symbol not found.")
 }
 
-func (f *FutureUtil) WsLoopSingleStream(
+func WsLoopSingleStream(
 	ctx context.Context,
+	logger i_logger.ILogger,
 	pair string,
 	dataType string,
 	handler func(msg []byte),
@@ -53,25 +44,25 @@ func (f *FutureUtil) WsLoopSingleStream(
 	for {
 		select {
 		case <-wsServeChan:
-			f.logger.InfoF("Connecting <%s>...", url)
+			logger.InfoF("Connecting <%s>...", url)
 			doneC, stopC, err = futures.WsServe(
 				futures.NewWsConfig(url),
 				handler,
 				func(err error) {
 					if strings.Contains(err.Error(), "connection timed out") {
-						f.logger.InfoF("Connection <%s> timed out, reconnect.", url)
+						logger.InfoF("Connection <%s> timed out, reconnect.", url)
 						wsServeChan <- true
 					} else {
-						f.logger.ErrorF("Connection <%s> error: %v", url, err)
+						logger.ErrorF("Connection <%s> error: %v", url, err)
 					}
 				},
 			)
 			if err != nil {
 				return err
 			}
-			f.logger.InfoF("Connect <%s> done.", url)
+			logger.InfoF("Connect <%s> done.", url)
 		case <-doneC:
-			f.logger.InfoF("Connection <%s> closed, to reconnect...", url)
+			logger.InfoF("Connection <%s> closed, to reconnect...", url)
 			wsServeChan <- true
 			doneC = nil // 阻止这个分支被多次执行
 			continue
@@ -82,8 +73,9 @@ func (f *FutureUtil) WsLoopSingleStream(
 	}
 }
 
-func (f *FutureUtil) WsLoopMultiStream(
+func WsLoopMultiStream(
 	ctx context.Context,
+	logger i_logger.ILogger,
 	streamNames []string, // e.g. btcusdt@kline_5m
 	handler func(msg []byte),
 ) error {
@@ -100,25 +92,25 @@ func (f *FutureUtil) WsLoopMultiStream(
 	for {
 		select {
 		case <-wsServeChan:
-			f.logger.InfoF("Connecting <%s>...", url)
+			logger.InfoF("Connecting <%s>...", url)
 			doneC, stopC, err = futures.WsServe(
 				futures.NewWsConfig(url),
 				handler,
 				func(err error) {
 					if strings.Contains(err.Error(), "connection timed out") {
-						f.logger.InfoF("Connection <%s> timed out, reconnect.", url)
+						logger.InfoF("Connection <%s> timed out, reconnect.", url)
 						wsServeChan <- true
 					} else {
-						f.logger.ErrorF("Connection <%s> error: %v", url, err)
+						logger.ErrorF("Connection <%s> error: %v", url, err)
 					}
 				},
 			)
 			if err != nil {
 				return err
 			}
-			f.logger.InfoF("Connect <%s> done.", url)
+			logger.InfoF("Connect <%s> done.", url)
 		case <-doneC:
-			f.logger.InfoF("Connection <%s> closed, to reconnect...", url)
+			logger.InfoF("Connection <%s> closed, to reconnect...", url)
 			wsServeChan <- true
 			doneC = nil // 阻止这个分支被多次执行
 			continue
