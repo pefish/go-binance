@@ -102,7 +102,7 @@ func (t *WSService) WatchAnnouncement(
 			event := new(WsAnnouncementEvent)
 			err := json.Unmarshal(data, &event)
 			if err != nil {
-				t.logger.ErrorF("event Unmarshal error: %v", err)
+				t.logger.ErrorF("event Unmarshal error: %+v", err)
 				return
 			}
 			handler(event)
@@ -152,7 +152,7 @@ func WsServeLoop(
 						wsServeChan <- true
 					} else {
 						// 如果是其他错误，直接中断
-						logger.ErrorF("Connection <%s> error: %v", url, err)
+						logger.ErrorF("Connection <%s> error: %+v", url, err)
 						cancel()
 					}
 				},
