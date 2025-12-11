@@ -1,8 +1,6 @@
 package alpha
 
 import (
-	"time"
-
 	go_http "github.com/pefish/go-http"
 	i_logger "github.com/pefish/go-interface/i-logger"
 	"github.com/pkg/errors"
@@ -66,10 +64,8 @@ func (t *Client) ListTokens() ([]*TokenInfoType, error) {
 		Data    []*TokenInfoType `json:"data"`
 		Success bool             `json:"success"`
 	}
-	_, _, err := go_http.NewHttpRequester(
-		go_http.WithLogger(t.logger),
-		go_http.WithTimeout(5*time.Second),
-	).GetForStruct(
+	_, _, err := go_http.HttpInstance.GetForStruct(
+		t.logger,
 		&go_http.RequestParams{
 			Url: "https://www.binance.com/bapi/defi/v1/public/wallet-direct/buw/wallet/cex/alpha/all/token/list",
 		},

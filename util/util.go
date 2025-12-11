@@ -2,7 +2,6 @@ package util
 
 import (
 	"fmt"
-	"time"
 
 	go_http "github.com/pefish/go-http"
 	i_logger "github.com/pefish/go-interface/i-logger"
@@ -27,7 +26,8 @@ func GetCirculatingSupplyInfo(logger i_logger.ILogger, currency string) (*Circul
 			} `json:"progress"`
 		} `json:"data"`
 	}
-	_, _, err := go_http.NewHttpRequester(go_http.WithLogger(logger), go_http.WithTimeout(10*time.Second)).GetForStruct(
+	_, _, err := go_http.HttpInstance.GetForStruct(
+		logger,
 		&go_http.RequestParams{
 			Url: "https://www.binance.com/bapi/apex/v1/public/apex/marketing/token-unlock/detail",
 			Queries: map[string]string{
@@ -68,7 +68,8 @@ func GetTokenInfo(logger i_logger.ILogger, currency string) (*TokenInfoType, err
 		Message string        `json:"message"`
 		Data    TokenInfoType `json:"data"`
 	}
-	_, _, err := go_http.NewHttpRequester(go_http.WithLogger(logger), go_http.WithTimeout(10*time.Second)).GetForStruct(
+	_, _, err := go_http.HttpInstance.GetForStruct(
+		logger,
 		&go_http.RequestParams{
 			Url: "https://www.binance.com/bapi/apex/v1/friendly/apex/marketing/web/token-info",
 			Queries: map[string]string{
