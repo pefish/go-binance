@@ -104,6 +104,7 @@ type GetQuoteParamType struct {
 	WalletType string  `json:"walletType,omitempty"` // 选择支付钱包，可支持的钱包的选择有SPOT，FUNDING和EARN。组合钱包选择也可支持，如SPOT_FUNDING，FUNDING_EARN，SPOT_FUNDING_EARN或者SPOT_EARN。默认选择为SPOT
 }
 
+// api key 不可用，需要额外向币安申请权限
 func (t *Client) GetQuote(params *GetQuoteParamType) (*GetQuoteResultType, error) {
 	if params.FromAsset == "" ||
 		params.ToAsset == "" {

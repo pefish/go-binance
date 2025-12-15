@@ -18,24 +18,21 @@ func SignRequest(
 	secretKey string,
 ) (*go_http.RequestParams, error) {
 	body := make(url.Values, 0)
-
 	b, err := json.Marshal(params.Params)
 	if err != nil {
 		return nil, err
 	}
-
 	var m map[string]any
 	err = json.Unmarshal(b, &m)
 	if err != nil {
 		return nil, err
 	}
-
 	for k, v := range m {
 		body.Set(k, go_format_any.ToString(v))
 	}
 	body.Set("timestamp", go_format_any.ToString(time.Now().UnixMilli()))
-	bodyString := body.Encode()
 
+	bodyString := body.Encode()
 	mac := hmac.New(sha256.New, []byte(secretKey))
 	_, err = mac.Write([]byte(bodyString))
 	if err != nil {
