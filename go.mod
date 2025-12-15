@@ -10,10 +10,11 @@ require (
 	github.com/gorilla/websocket v1.5.3
 	github.com/joho/godotenv v1.5.1
 	github.com/json-iterator/go v1.1.12
-	github.com/pefish/go-http v0.8.15
+	github.com/pefish/go-format v0.5.5
+	github.com/pefish/go-http v0.8.17
 	github.com/pefish/go-interface v0.1.5
 	github.com/pefish/go-logger v0.6.2
-	github.com/pefish/go-test v0.0.4
+	github.com/pefish/go-test v0.0.5
 	github.com/pkg/errors v0.9.1
 	github.com/stretchr/testify v1.11.1
 )
