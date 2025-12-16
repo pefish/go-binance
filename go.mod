@@ -10,7 +10,7 @@ require (
 	github.com/gorilla/websocket v1.5.3
 	github.com/joho/godotenv v1.5.1
 	github.com/json-iterator/go v1.1.12
-	github.com/pefish/go-format v0.5.5
+	github.com/pefish/go-format v0.5.7
 	github.com/pefish/go-http v0.8.17
 	github.com/pefish/go-interface v0.1.5
 	github.com/pefish/go-logger v0.6.2
@@ -20,6 +20,8 @@ require (
 )
 
 require (
+	github.com/fatih/structs v1.1.0 // indirect
+	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.2 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
