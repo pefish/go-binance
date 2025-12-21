@@ -29,7 +29,7 @@ type TokenInfoType struct {
 	Price             go_format_type.Float64String `json:"price"`
 	PercentChange24h  go_format_type.Float64String `json:"percentChange24h"`
 	Volume24h         go_format_type.Float64String `json:"volume24h"`
-	MarketCap         go_format_type.Float64String `json:"marketCap"`
+	MarketCap         go_format_type.Float64String `json:"marketCap"` // 单位 U
 	Fdv               go_format_type.Float64String `json:"fdv"`
 	Liquidity         go_format_type.Float64String `json:"liquidity"`
 	TotalSupply       go_format_type.Float64String `json:"totalSupply"`
