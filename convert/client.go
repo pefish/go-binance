@@ -87,7 +87,7 @@ func (t *Client) SupportedPairs(params *SupportedPairsParamType) ([]*SupportedPa
 }
 
 type GetQuoteResultType struct {
-	QuoteID        string  `json:"quoteId"`
+	QuoteID        string  `json:"quoteId"` // quoteId 仅在账户余额充足时返回
 	Ratio          float64 `json:"ratio,string"`
 	InverseRatio   float64 `json:"inverseRatio,string"`
 	ValidTimestamp int64   `json:"validTimestamp"`
