@@ -5,7 +5,10 @@ import (
 	"crypto/sha256"
 	"encoding/json"
 	"fmt"
+	"maps"
 	"net/url"
+	"slices"
+	"strings"
 	"time"
 
 	go_format_any "github.com/pefish/go-format/any"
@@ -32,7 +35,20 @@ func SignRequest(
 	}
 	body.Set("timestamp", go_format_any.ToString(time.Now().UnixMilli()))
 
-	bodyString := body.Encode()
+	var buf strings.Builder
+	for _, k := range slices.Sorted(maps.Keys(body)) {
+		vs := body[k]
+		keyEscaped := k
+		for _, v := range vs {
+			if buf.Len() > 0 {
+				buf.WriteByte('&')
+			}
+			buf.WriteString(keyEscaped)
+			buf.WriteByte('=')
+			buf.WriteString(v)
+		}
+	}
+	bodyString := buf.String()
 	mac := hmac.New(sha256.New, []byte(secretKey))
 	_, err = mac.Write([]byte(bodyString))
 	if err != nil {
@@ -40,7 +56,6 @@ func SignRequest(
 	}
 	sig := fmt.Sprintf("%x", (mac.Sum(nil)))
 
-	bodyString = body.Encode()
 	bodyString += "&signature=" + sig
 
 	params.Params = bodyString
