@@ -38,7 +38,7 @@ func TestClient_SupportedPairs(t *testing.T) {
 func TestClient_GetQuote(t *testing.T) {
 	quote, err := client.GetQuote(&GetQuoteParamType{
 		FromAsset:  "BNB",
-		ToAsset:    "币安人生",
+		ToAsset:    "CAKE",
 		FromAmount: 0.1,
 	})
 	go_test_.Equal(t, nil, err)
