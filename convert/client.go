@@ -137,7 +137,7 @@ func (t *Client) GetQuote(params *GetQuoteParamType) (*GetQuoteResultType, error
 	if err != nil {
 		return nil, err
 	}
-	if bodyBytes[0] == '[' {
+	if bodyBytes[0] == '{' {
 		err = json.Unmarshal(bodyBytes, &httpResult.Data)
 		if err != nil {
 			return nil, err
