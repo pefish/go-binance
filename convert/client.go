@@ -126,9 +126,9 @@ func (t *Client) GetQuote(params *GetQuoteParamType) (*GetQuoteResultType, error
 		return nil, err
 	}
 	var httpResult struct {
-		Code int64               `json:"code"`
-		Msg  string              `json:"msg"`
-		Data *GetQuoteResultType `json:"data"`
+		Code int64  `json:"code"`
+		Msg  string `json:"msg"`
+		GetQuoteResultType
 	}
 	_, bodyBytes, err := go_http.HttpInstance.PostFormUrlEncoded(
 		t.logger,
@@ -137,16 +137,12 @@ func (t *Client) GetQuote(params *GetQuoteParamType) (*GetQuoteResultType, error
 	if err != nil {
 		return nil, err
 	}
-	if bodyBytes[0] == '{' {
-		err = json.Unmarshal(bodyBytes, &httpResult.Data)
-		if err != nil {
-			return nil, err
-		}
-		return httpResult.Data, nil
-	}
 	err = json.Unmarshal(bodyBytes, &httpResult)
 	if err != nil {
 		return nil, err
 	}
-	return nil, errors.New(httpResult.Msg)
+	if httpResult.Code != 0 {
+		return nil, errors.New(httpResult.Msg)
+	}
+	return &httpResult.GetQuoteResultType, nil
 }
