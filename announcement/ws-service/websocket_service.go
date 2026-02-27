@@ -200,12 +200,10 @@ func WsServe(logger i_logger.ILogger, cfg *WsConfig, handler WsHandler, errHandl
 		// Wait for the stopC channel to be closed.  We do that in a
 		// separate goroutine because ReadMessage is a blocking
 		// operation.
-		silent := false
 		go func() {
 			select {
 			case <-stopC:
 				logger.Debug("stopC received.")
-				silent = true
 			case <-doneC:
 				logger.Debug("doneC received.")
 			}
@@ -215,24 +213,18 @@ func WsServe(logger i_logger.ILogger, cfg *WsConfig, handler WsHandler, errHandl
 		for {
 			_, message, err := c.ReadMessage()
 			if err != nil {
-				if !silent {
-					errHandler(errors.Wrap(err, "failed to read websocket message"))
-				}
+				errHandler(errors.Wrap(err, "failed to read websocket message"))
 				return
 			}
 			logger.DebugF("received msg: %s", string(message))
 			response := new(ResponseType)
 			err = json.Unmarshal(message, &response)
 			if err != nil {
-				if !silent {
-					errHandler(errors.Errorf("response Unmarshal error. %+v", err))
-				}
+				errHandler(errors.Errorf("response Unmarshal error. %+v", err))
+
 				return
 			}
 			if response.Type_ == "COMMAND" && response.SubType == "REGISTER" {
-				if !silent {
-					errHandler(errors.Errorf("response error. %+v", response))
-				}
 				return
 			}
 			handler([]byte(response.Data))

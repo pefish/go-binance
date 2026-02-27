@@ -8,9 +8,12 @@ import (
 	"github.com/davecgh/go-spew/spew"
 	"github.com/joho/godotenv"
 	ws_service "github.com/pefish/go-binance/announcement/ws-service"
+	i_logger "github.com/pefish/go-interface/i-logger"
 	t_logger "github.com/pefish/go-interface/t-logger"
 	go_logger "github.com/pefish/go-logger"
 )
+
+var logger i_logger.ILogger = &i_logger.DefaultLogger
 
 func main() {
 	envMap, _ := godotenv.Read("./.env")
@@ -25,6 +28,10 @@ func main() {
 }
 
 func do() error {
+	logger.InfoDump(
+		os.Getenv("API_KEY"),
+		os.Getenv("API_SECRET"),
+	)
 	wsService := ws_service.New(
 		os.Getenv("API_KEY"),
 		os.Getenv("API_SECRET"),
