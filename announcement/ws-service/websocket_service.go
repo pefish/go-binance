@@ -221,11 +221,10 @@ func WsServe(logger i_logger.ILogger, cfg *WsConfig, handler WsHandler, errHandl
 			err = json.Unmarshal(message, &response)
 			if err != nil {
 				errHandler(errors.Errorf("response Unmarshal error. %+v", err))
-
 				return
 			}
 			if response.Type_ == "COMMAND" && response.SubType == "REGISTER" {
-				return
+				continue
 			}
 			handler([]byte(response.Data))
 		}
